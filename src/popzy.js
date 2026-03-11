@@ -23,10 +23,12 @@ function Popzy(options = {}) {
 
     this.opt = Object.assign(
         {
+            enableScrollLock: true,
             destroyOnClose: true,
             footer: false,
             cssClass: [],
             closeMethods: ["button", "overlay", "escape"],
+            scrollLockTarget: () => document.body,
         },
         options,
     );
@@ -161,10 +163,23 @@ Popzy.prototype.open = function () {
     this._onTransitionEnd(this.opt.onOpen);
 
     // Disable scrolling
-    document.body.classList.add("popzy--no-scroll");
-    document.body.style.paddingRight = this._getScrollbarWidth() + "px";
+    if (this.opt.enableScrollLock) {
+        const target = this.opt.scrollLockTarget();
+
+        if (this._hasScrollbar(target)) {
+            target.classList.add("popzy--no-scroll");
+            const targetPadRight = parseInt(
+                getComputedStyle(target).paddingRight,
+            );
+            target.style.paddingRight = targetPadRight + this._getScrollbarWidth() + "px";
+        }
+    }
 
     return this._backdrop;
+};
+
+Popzy.prototype._hasScrollbar = (target) => {
+    return target.scrollHeight > target.clientHeight;
 };
 
 Popzy.prototype._handleEscapeKey = function (e) {
@@ -197,9 +212,13 @@ Popzy.prototype.close = function (destroy = this.opt.destroyOnClose) {
         }
 
         //Enable scrolling
-        if (!Popzy.elements.length) {
-            document.body.classList.remove("popzy--no-scroll");
-            document.body.style.paddingRight = "";
+        if (this.opt.enableScrollLock && !Popzy.elements.length) {
+            const target = this.opt.scrollLockTarget();
+
+            if (this._hasScrollbar(target)) {
+                target.classList.remove("popzy--no-scroll");
+                target.style.paddingRight = "";
+            }
         }
 
         if (typeof this.opt.onClose === "function") this.opt.onClose();

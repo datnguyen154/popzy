@@ -189,6 +189,7 @@ body {
         "Open Sans",
         "Helvetica Neue",
         sans-serif;
+    overflow: hidden;
 }
 
 a,
@@ -215,6 +216,12 @@ code:not(.hljs) {
 
 .important {
     text-decoration: underline;
+}
+
+.wrapper {
+    position: fixed;
+    inset: 0;
+    overflow-y: auto;
 }
 
 .container {
