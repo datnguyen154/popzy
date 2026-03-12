@@ -55,7 +55,7 @@ Popzy.prototype._build = function () {
 
     //Create modal elements
     this._backdrop = document.createElement("div");
-    this._backdrop.className = "popzy__backdrop";
+    this._backdrop.className = "popzy";
 
     const container = document.createElement("div");
     container.className = "popzy__container";
@@ -101,8 +101,8 @@ Popzy.prototype.setContent = function (content) {
     }
 };
 
-Popzy.prototype.setFooterContent = function (html) {
-    this._footerContent = html;
+Popzy.prototype.setFooterContent = function (content) {
+    this._footerContent = content;
     this._renderFooterContent();
 };
 
@@ -171,7 +171,8 @@ Popzy.prototype.open = function () {
             const targetPadRight = parseInt(
                 getComputedStyle(target).paddingRight,
             );
-            target.style.paddingRight = targetPadRight + this._getScrollbarWidth() + "px";
+            target.style.paddingRight =
+                targetPadRight + this._getScrollbarWidth() + "px";
         }
     }
 
@@ -179,6 +180,13 @@ Popzy.prototype.open = function () {
 };
 
 Popzy.prototype._hasScrollbar = (target) => {
+    if ([document.documentElement, document.body].includes(target)) {
+        return (
+            document.documentElement.scrollHeight >
+                document.documentElement.clientHeight ||
+            document.body.scrollHeight > document.body.clientHeight
+        );
+    }
     return target.scrollHeight > target.clientHeight;
 };
 
